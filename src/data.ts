@@ -16,6 +16,7 @@ import {
   ImageIcon,
   BarChart3,
   Send,
+  Bot,
 } from 'lucide-react';
 import type {
   NavItem,
@@ -25,11 +26,13 @@ import type {
   Script,
   Route,
   ApprovalItem,
+  Persona,
 } from './types';
 
 export const navItems: NavItem[] = [
   { key: 'dashboard', label: 'لوحة التحكم', icon: LayoutDashboard },
   { key: 'characters', label: 'استوديو الشخصيات', icon: Users },
+  { key: 'personas', label: 'إدارة الشخصيات والوكلاء', icon: Bot },
   { key: 'scripts', label: 'محرر السكريبتات', icon: FileText },
   { key: 'omniroute', label: 'إدارة OmniRoute', icon: Network },
   { key: 'approvals', label: 'مركز الموافقات', icon: CheckSquare },
@@ -425,6 +428,97 @@ export const statusLabels: Record<string, string> = {
   rejected: 'مرفوض',
   drafting: 'قيد الإنشاء',
 };
+
+export const personas: Persona[] = [
+  {
+    id: 'p1',
+    name: 'المحلل التقني',
+    role: 'خبير تقني — مراجعات وتحليلات الأجهزة',
+    image: 'https://images.pexels.com/photos/16764124/pexels-photo-16764124.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['يوتيوب', 'إكس', 'لينكدإن'],
+    status: 'active',
+    tone: 'احترافي وودود',
+    systemPrompt: 'أنت محلل تقني خبير. اكتب مراجعات صادقة ومفصلة عن الأجهزة والتقنيات الحديثة. استخدم لغة واضحة وأمثلة عملية.',
+    contentCount: 142,
+    engagement: 11.4,
+  },
+  {
+    id: 'p2',
+    name: 'الراوي',
+    role: 'صانع قصص — محتوى ملهم وعاطفي',
+    image: 'https://images.pexels.com/photos/17628945/pexels-photo-17628945.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['تيك توك', 'إنستغرام'],
+    status: 'active',
+    tone: 'عاطفي وملهم',
+    systemPrompt: 'أنت راوي ماهر. احكِ قصصاً قصيرة مؤثرة تترك أثراً عميقاً. استخدم صوراً بصرية قوية ونهايات مفاجئة.',
+    contentCount: 89,
+    engagement: 14.7,
+  },
+  {
+    id: 'p3',
+    name: 'المعلّم',
+    role: 'مربّي — محتوى تعليمي مبسّط',
+    image: 'https://images.pexels.com/photos/8617769/pexels-photo-8617769.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['يوتيوب', 'فيسبوك'],
+    status: 'active',
+    tone: 'بسيط وتثقيفي',
+    systemPrompt: 'أنت معلّم صبور. اشرح المفاهيم المعقدة ببساطة. استخدم أمثلة من الحياة اليومية وقسّم الدروس لخطوات واضحة.',
+    contentCount: 67,
+    engagement: 8.9,
+  },
+  {
+    id: 'p4',
+    name: 'الناقد',
+    role: 'محلّل نقدّي — آراء جريئة',
+    image: 'https://images.pexels.com/photos/6566522/pexels-photo-6566522.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['إكس', 'لينكدإن'],
+    status: 'paused',
+    tone: 'جريء ومباشر',
+    systemPrompt: 'أنت ناقد حاد. قدّم آراء صريحة ومبنية على أدلة. لا تخشى المخالفة لكن ادعم كلامك بالمنطق والبيانات.',
+    contentCount: 34,
+    engagement: 6.2,
+  },
+  {
+    id: 'p5',
+    name: 'المستكشف',
+    role: 'رحّالة — محتوى سفر ومغامرات',
+    image: 'https://images.pexels.com/photos/5984430/pexels-photo-5984430.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['إنستغرام', 'تيك توك'],
+    status: 'active',
+    tone: 'حيوي ومغامر',
+    systemPrompt: 'أنت مستكشف شغوف. شارك تجارب السفر بحماس. صف الأماكن بتفاصيل حسية وادفع المتابعين لاكتشاف العالم.',
+    contentCount: 56,
+    engagement: 12.8,
+  },
+  {
+    id: 'p6',
+    name: 'الفيلسوف',
+    role: 'مفكّر — تأملات عميقة',
+    image: 'https://images.pexels.com/photos/33148745/pexels-photo-33148745.jpeg?auto=compress&cs=tinysrgb&h=300&w=300',
+    platforms: ['يوتيوب', 'لينكدإن'],
+    status: 'paused',
+    tone: 'عميق وتأملي',
+    systemPrompt: 'أنت فيلسوف متأمل. اطرح أسئلة وجودية محفّزة للتفكير. اربط الأفكار الفلسفية بالحياة المعاصرة بلغة رصينة.',
+    contentCount: 23,
+    engagement: 9.5,
+  },
+];
+
+export const personaStatusLabels: Record<string, string> = {
+  active: 'نشط',
+  paused: 'معطل',
+};
+
+export const platformOptions = [
+  'يوتيوب',
+  'إنستغرام',
+  'تيك توك',
+  'إكس',
+  'لينكدإن',
+  'فيسبوك',
+  'سناب شات',
+  'تردد',
+];
 
 export const priorityLabels: Record<string, string> = {
   low: 'منخفضة',

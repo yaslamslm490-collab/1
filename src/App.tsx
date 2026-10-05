@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { Header } from '@/components/Header';
 import { DashboardView } from '@/views/DashboardView';
 import { CharactersView } from '@/views/CharactersView';
+import { PersonasView } from '@/views/PersonasView';
 import { ScriptsView } from '@/views/ScriptsView';
 import { OmniRouteView } from '@/views/OmniRouteView';
 import { ApprovalsView } from '@/views/ApprovalsView';
@@ -19,6 +20,8 @@ function App() {
         return <DashboardView />;
       case 'characters':
         return <CharactersView />;
+      case 'personas':
+        return <PersonasView />;
       case 'scripts':
         return <ScriptsView />;
       case 'omniroute':

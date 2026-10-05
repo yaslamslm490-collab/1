@@ -1,9 +1,23 @@
 export type ViewKey =
   | 'dashboard'
   | 'characters'
+  | 'personas'
   | 'scripts'
   | 'omniroute'
   | 'approvals';
+
+export interface Persona {
+  id: string;
+  name: string;
+  role: string;
+  image: string;
+  platforms: string[];
+  status: 'active' | 'paused';
+  tone: string;
+  systemPrompt: string;
+  contentCount: number;
+  engagement: number;
+}
 
 export interface NavItem {
   key: ViewKey;
