@@ -6,6 +6,32 @@ export type ViewKey =
   | 'omniroute'
   | 'approvals';
 
+export interface PersonaBibleIdentity {
+  name: string;
+  code: string;
+  role: string;
+  tone: string;
+  audience: string;
+  personality: string;
+  backstory: string;
+}
+
+export interface PersonaBibleRules {
+  do: string[];
+  dont: string[];
+}
+
+export interface PersonaBiblePrompt {
+  name: string;
+  template: string;
+}
+
+export interface PersonaBible {
+  identity: PersonaBibleIdentity;
+  rules: PersonaBibleRules;
+  prompts: PersonaBiblePrompt[];
+}
+
 export interface Persona {
   id: string;
   name: string;
@@ -17,6 +43,8 @@ export interface Persona {
   systemPrompt: string;
   contentCount: number;
   engagement: number;
+  code?: string;
+  bible?: PersonaBible;
 }
 
 export interface NavItem {

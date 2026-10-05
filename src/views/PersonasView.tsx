@@ -15,6 +15,15 @@ import {
   TrendingUp,
   FileText,
   CircleDot,
+  BookOpen,
+  Check,
+  XCircle,
+  Code2,
+  User,
+  ScrollText,
+  Lightbulb,
+  Users,
+  Heart,
 } from 'lucide-react';
 
 interface PersonaFormData {
@@ -41,6 +50,107 @@ interface ChatMessage {
   text: string;
 }
 
+type CardTab = 'overview' | 'bible';
+type BibleTab = 'identity' | 'rules' | 'prompts';
+
+function BibleIdentitySection({ persona }: { persona: Persona }) {
+  const id = persona.bible!.identity;
+  const fields = [
+    { icon: User, label: 'الاسم', value: id.name },
+    { icon: Code2, label: 'الكود', value: id.code },
+    { icon: Heart, label: 'الدور', value: id.role },
+    { icon: Sparkles, label: 'النبرة', value: id.tone },
+    { icon: Users, label: 'الجمهور', value: id.audience },
+    { icon: Lightbulb, label: 'الشخصية', value: id.personality },
+  ];
+  return (
+    <div className="space-y-3">
+      {fields.map((f) => {
+        const Icon = f.icon;
+        return (
+          <div key={f.label} className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center flex-shrink-0 border border-default">
+              <Icon className="w-4 h-4 text-accent" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs text-muted mb-0.5">{f.label}</p>
+              <p className="text-sm text-primary leading-relaxed">{f.value}</p>
+            </div>
+          </div>
+        );
+      })}
+      <div className="flex items-start gap-3 pt-3 border-t border-default">
+        <div className="w-8 h-8 rounded-lg bg-elevated flex items-center justify-center flex-shrink-0 border border-default">
+          <ScrollText className="w-4 h-4 text-accent" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs text-muted mb-0.5">القصة الخلفية</p>
+          <p className="text-sm text-secondary leading-relaxed">{id.backstory}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BibleRulesSection({ persona }: { persona: Persona }) {
+  const rules = persona.bible!.rules;
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-7 h-7 rounded-lg bg-accent-dim flex items-center justify-center">
+            <Check className="w-3.5 h-3.5 text-accent" />
+          </div>
+          <h4 className="text-sm font-bold text-accent">قواعد Do</h4>
+        </div>
+        <ul className="space-y-2">
+          {rules.do.map((item, i) => (
+            <li key={i} className="flex items-start gap-2 text-xs text-secondary leading-relaxed">
+              <Check className="w-3.5 h-3.5 text-accent flex-shrink-0 mt-0.5" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center">
+            <XCircle className="w-3.5 h-3.5 text-error" />
+          </div>
+          <h4 className="text-sm font-bold text-error">قواعد Don't</h4>
+        </div>
+        <ul className="space-y-2">
+          {rules.dont.map((item, i) => (
+            <li key={i} className="flex items-start gap-2 text-xs text-secondary leading-relaxed">
+              <XCircle className="w-3.5 h-3.5 text-error flex-shrink-0 mt-0.5" />
+              <span>{item}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function BiblePromptsSection({ persona }: { persona: Persona }) {
+  const prompts = persona.bible!.prompts;
+  return (
+    <div className="space-y-3">
+      {prompts.map((p, i) => (
+        <div key={i} className="bg-elevated rounded-xl p-4 border border-default">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-accent-dim flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-accent" />
+            </div>
+            <h4 className="text-sm font-medium text-primary">{p.name}</h4>
+          </div>
+          <p className="text-xs text-secondary leading-relaxed pr-9">{p.template}</p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function PersonaCard({
   persona,
   onEdit,
@@ -53,13 +163,29 @@ function PersonaCard({
   onTest: (p: Persona) => void;
 }) {
   const style = statusStyles[persona.status] ?? statusStyles.paused;
+  const [cardTab, setCardTab] = useState<CardTab>('overview');
+  const [bibleTab, setBibleTab] = useState<BibleTab>('identity');
+  const hasBible = !!persona.bible;
+
+  const bibleTabs: { key: BibleTab; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { key: 'identity', label: 'الهوية', icon: User },
+    { key: 'rules', label: "Do/Don't", icon: Check },
+    { key: 'prompts', label: 'القوالب', icon: Sparkles },
+  ];
 
   return (
-    <div className="card overflow-hidden group">
+    <div className="card overflow-hidden group flex flex-col">
       <div className="relative h-32 bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-card)]">
         <div className="absolute inset-0 opacity-30"
           style={{ background: `radial-gradient(circle at 70% 50%, var(--accent-glow), transparent 60%)` }}
         />
+        {persona.code && (
+          <div className="absolute top-3 right-3">
+            <span className="text-xs px-2.5 py-1 rounded-lg font-mono font-medium bg-black/30 text-accent backdrop-blur-sm">
+              {persona.code}
+            </span>
+          </div>
+        )}
         <div className="absolute top-3 left-3">
           <span
             className="text-xs px-3 py-1 rounded-lg font-medium flex items-center gap-1.5"
@@ -71,7 +197,7 @@ function PersonaCard({
         </div>
       </div>
 
-      <div className="px-5 pb-5 -mt-12">
+      <div className="px-5 pb-5 -mt-12 flex-1 flex flex-col">
         <div className="flex items-end justify-between mb-3">
           <img
             src={persona.image}
@@ -87,61 +213,124 @@ function PersonaCard({
         <h3 className="font-display font-bold text-base text-primary mb-1">{persona.name}</h3>
         <p className="text-xs text-secondary mb-3 line-clamp-1">{persona.role}</p>
 
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          {persona.platforms.map((p) => (
-            <span
-              key={p}
-              className="text-xs px-2.5 py-1 rounded-lg bg-elevated text-secondary border border-default"
+        {cardTab === 'overview' && (
+          <>
+            <div className="flex flex-wrap gap-1.5 mb-4">
+              {persona.platforms.map((p) => (
+                <span
+                  key={p}
+                  className="text-xs px-2.5 py-1 rounded-lg bg-elevated text-secondary border border-default"
+                >
+                  {p}
+                </span>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              <div className="bg-elevated rounded-xl p-3 border border-default text-center">
+                <FileText className="w-4 h-4 text-muted mx-auto mb-1" />
+                <p className="font-display font-bold text-sm text-primary">{persona.contentCount}</p>
+                <p className="text-xs text-muted">محتوى</p>
+              </div>
+              <div className="bg-elevated rounded-xl p-3 border border-default text-center">
+                <TrendingUp className="w-4 h-4 text-muted mx-auto mb-1" />
+                <p className="font-display font-bold text-sm text-primary">{persona.engagement}%</p>
+                <p className="text-xs text-muted">تفاعل</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {cardTab === 'bible' && hasBible && (
+          <div className="mb-4 animate-fade-up">
+            <div className="flex items-center gap-1 mb-3 bg-elevated rounded-xl p-1 border border-default">
+              {bibleTabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.key}
+                    onClick={() => setBibleTab(tab.key)}
+                    className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                      bibleTab === tab.key
+                        ? 'bg-accent-dim text-accent'
+                        : 'text-muted hover:text-primary'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="max-h-[280px] overflow-y-auto pl-1">
+              {bibleTab === 'identity' && <BibleIdentitySection persona={persona} />}
+              {bibleTab === 'rules' && <BibleRulesSection persona={persona} />}
+              {bibleTab === 'prompts' && <BiblePromptsSection persona={persona} />}
+            </div>
+          </div>
+        )}
+
+        <div className="mt-auto space-y-3">
+          {hasBible && (
+            <div className="flex items-center gap-1 bg-elevated rounded-xl p-1 border border-default">
+              <button
+                onClick={() => setCardTab('overview')}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                  cardTab === 'overview'
+                    ? 'bg-accent-dim text-accent'
+                    : 'text-muted hover:text-primary'
+                }`}
+              >
+                <CircleDot className="w-3.5 h-3.5" />
+                <span>نظرة عامة</span>
+              </button>
+              <button
+                onClick={() => setCardTab('bible')}
+                className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg text-xs font-medium transition-all ${
+                  cardTab === 'bible'
+                    ? 'bg-accent-dim text-accent'
+                    : 'text-muted hover:text-primary'
+                }`}
+              >
+                <BookOpen className="w-3.5 h-3.5" />
+                <span>Character Bible</span>
+              </button>
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => onEdit(persona)}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-elevated text-secondary px-3 py-2 rounded-lg text-xs font-medium border border-default hover:text-primary hover:border-accent/30 transition-all"
             >
-              {p}
-            </span>
-          ))}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="bg-elevated rounded-xl p-3 border border-default text-center">
-            <FileText className="w-4 h-4 text-muted mx-auto mb-1" />
-            <p className="font-display font-bold text-sm text-primary">{persona.contentCount}</p>
-            <p className="text-xs text-muted">محتوى</p>
+              <Pencil className="w-3.5 h-3.5" />
+              <span>تعديل</span>
+            </button>
+            <button
+              onClick={() => onTogglePause(persona.id)}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-elevated text-secondary px-3 py-2 rounded-lg text-xs font-medium border border-default hover:text-primary transition-all"
+            >
+              {persona.status === 'active' ? (
+                <>
+                  <Pause className="w-3.5 h-3.5" />
+                  <span>إيقاف</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5" />
+                  <span>تفعيل</span>
+                </>
+              )}
+            </button>
+            <button
+              onClick={() => onTest(persona)}
+              className="flex-1 flex items-center justify-center gap-1.5 bg-accent-dim text-accent px-3 py-2 rounded-lg text-xs font-medium hover:bg-accent hover:text-white transition-all"
+            >
+              <FlaskConical className="w-3.5 h-3.5" />
+              <span>اختبار</span>
+            </button>
           </div>
-          <div className="bg-elevated rounded-xl p-3 border border-default text-center">
-            <TrendingUp className="w-4 h-4 text-muted mx-auto mb-1" />
-            <p className="font-display font-bold text-sm text-primary">{persona.engagement}%</p>
-            <p className="text-xs text-muted">تفاعل</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => onEdit(persona)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-elevated text-secondary px-3 py-2 rounded-lg text-xs font-medium border border-default hover:text-primary hover:border-accent/30 transition-all"
-          >
-            <Pencil className="w-3.5 h-3.5" />
-            <span>تعديل</span>
-          </button>
-          <button
-            onClick={() => onTogglePause(persona.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-elevated text-secondary px-3 py-2 rounded-lg text-xs font-medium border border-default hover:text-primary transition-all"
-          >
-            {persona.status === 'active' ? (
-              <>
-                <Pause className="w-3.5 h-3.5" />
-                <span>إيقاف</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5" />
-                <span>تفعيل</span>
-              </>
-            )}
-          </button>
-          <button
-            onClick={() => onTest(persona)}
-            className="flex-1 flex items-center justify-center gap-1.5 bg-accent-dim text-accent px-3 py-2 rounded-lg text-xs font-medium hover:bg-accent hover:text-white transition-all"
-          >
-            <FlaskConical className="w-3.5 h-3.5" />
-            <span>اختبار</span>
-          </button>
         </div>
       </div>
     </div>
